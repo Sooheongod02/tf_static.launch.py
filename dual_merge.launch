@@ -1,7 +1,7 @@
 <launch>
     <arg name="ot128_config" default="$(find hesai_ros_driver)/config/config_ot128.yaml"/>
     <arg name="qt128_config" default="$(find hesai_ros_driver)/config/config_qt128.yaml"/>
-    <arg name="rviz_config"  default="$(find hesai_ros_driver)/launch/dual_lidar.rviz"/>
+    <arg name="rviz_config"  default="$(find hesai_ros_driver)/launch/rviz.rviz"/>
 
     <group ns="ot128">
         <node pkg="hesai_ros_driver" name="hesai_driver" type="hesai_ros_driver_node" output="screen">
