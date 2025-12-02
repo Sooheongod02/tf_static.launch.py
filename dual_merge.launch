@@ -2,7 +2,7 @@
     <arg name="rviz_config" default="$(find hesai_ros_driver)/rviz/rviz.rviz"/>
 
     <node pkg="hesai_ros_driver" name="hesai_ros_driver_node" type="hesai_ros_driver_node" output="screen">
-        <rosparam command="load" file="$(find hesai_ros_driver)/config/config_fusion.yaml"/>
+        <rosparam command="load" file="$(find hesai_ros_driver)/config/config.yaml"/>
     </node>
 
     <node pkg="tf2_ros" type="static_transform_publisher" name="tf_ot128" 
