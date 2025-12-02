@@ -1,0 +1,21 @@
+lidar:
+  - driver:
+      lidar_type: "PandarQT"     # QT128 라이다 타입
+      frame_id: "qt128_frame"
+      device_ip: 192.168.1.202   # QT128 IP
+      host_ip: 192.168.1.100     # PC IP
+      udp_port: 2369             # OT128과 다른 UDP 포트 할당
+      ptc_port: 10110
+      pcap_path: ""
+      firetime_correction_file_path: ""
+      correction_file_path: ""
+      coordinate_correction_flag: false
+      multicast_ip: ""
+      fixed_frame: ""
+      target_frame: ""
+    ros:
+      ros_frame_id: "qt128_frame"
+      ros_recv_packet_topic: "/qt128/lidar_packets"
+      ros_send_point_cloud_topic: "/qt128/hesai/pandar_qt" # 토픽 이름 지정
+      send_packet_ros: false
+      send_point_cloud_ros: true
