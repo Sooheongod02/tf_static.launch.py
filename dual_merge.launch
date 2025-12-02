@@ -1,17 +1,26 @@
 <launch>
+    <arg name="ot128_config" default="$(find hesai_ros_driver)/config/config_ot128.yaml"/>
+    <arg name="qt128_config" default="$(find hesai_ros_driver)/config/config_qt128.yaml"/>
+    <arg name="rviz_config"  default="$(find hesai_ros_driver)/launch/dual_lidar.rviz"/>
+
     <group ns="ot128">
         <node pkg="hesai_ros_driver" name="hesai_driver" type="hesai_ros_driver_node" output="screen">
+            <param name="pcap_file"  type="string" value=""/>
             <param name="lidar_type" type="string" value="Pandar128"/>
-            <param name="pcap_file" type="string" value=""/>
-            <param name="params_file" type="string" value="$(find hesai_ros_driver)/config/config_ot128.yaml"/>
+            <param name="params_file" type="string" value="$(arg ot128_config)"/>
         </node>
     </group>
 
     <group ns="qt128">
         <node pkg="hesai_ros_driver" name="hesai_driver" type="hesai_ros_driver_node" output="screen">
+            <param name="pcap_file"  type="string" value=""/>
             <param name="lidar_type" type="string" value="PandarQT"/>
-            <param name="pcap_file" type="string" value=""/>
-            <param name="params_file" type="string" value="$(find hesai_ros_driver)/config/config_qt128.yaml"/>
+            <param name="params_file" type="string" value="$(arg qt128_config)"/>
         </node>
     </group>
+
+    <node pkg="tf2_ros" type="static_transform_publisher" name="tf_ot128" args="0 0 1.8 0 0 0 base_link ot128_frame" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="tf_qt128" args="1.0 0 0.5 0 0 0 base_link qt128_frame" />
+
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_config)" />
 </launch>
