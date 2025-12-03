@@ -5,33 +5,39 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
 def main():
-    rospy.init_node('gst_camera_node', anonymous=True)
+    rospy.init_node('gmsl_camera_node', anonymous=True)
     
-    # [핵심] 런치 파일에서 넘겨주는 파라미터 받기 (기본값: 0번, 이름 camera)
+    # [수정] 런치 파일에서 설정값 받아오기 (기본값 설정)
     device_id = rospy.get_param('~device_id', 0)
     topic_name = rospy.get_param('~camera_name', 'camera')
+    
+    # 각 카메라별 해상도와 FPS를 다르게 설정 가능
+    width = rospy.get_param('~width', 1920)
+    height = rospy.get_param('~height', 1080)
+    fps = rospy.get_param('~fps', 30)  # <-- 핵심: FPS를 변수로 받음
 
-    # 토픽 이름: /cam_front/image_raw 등으로 송출
     pub = rospy.Publisher(f'/{topic_name}/image_raw', Image, queue_size=10)
     bridge = CvBridge()
 
-    rospy.loginfo(f"[{topic_name}] Opening /dev/video{device_id} ...")
+    rospy.loginfo(f"[{topic_name}] Starting /dev/video{device_id} ({width}x{height} @ {fps}fps)")
 
-    # GStreamer 파이프라인 (해상도/FPS 조절 필요시 여기서 width, height 수정)
-    # USB 대역폭 문제 방지를 위해 해상도를 640x480으로 낮춤
+    # GStreamer 파이프라인 (변수 적용)
     gst_str = (
         f"v4l2src device=/dev/video{device_id} ! "
-        "video/x-raw,width=640,height=480,framerate=30/1 ! "
-        "videoconvert ! video/x-raw,format=BGR ! appsink drop=1"
+        f"video/x-raw,format=UYVY,width={width},height={height},framerate={fps}/1 ! " 
+        "nvvidconv ! video/x-raw(memory:NVMM) ! "
+        "nvvidconv ! video/x-raw,format=BGRx ! "
+        "videoconvert ! video/x-raw,format=BGR ! "
+        "appsink drop=1"
     )
 
     cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
 
     if not cap.isOpened():
-        rospy.logerr(f"[{topic_name}] 카메라 열기 실패! (/dev/video{device_id})")
+        rospy.logerr(f"[{topic_name}] 열기 실패! FPS({fps})나 해상도({width}x{height})가 맞는지 확인하세요.")
         return
 
-    rate = rospy.Rate(30)
+    rate = rospy.Rate(fps) # 루프 속도도 FPS에 맞춤
     while not rospy.is_shutdown():
         ret, frame = cap.read()
         if ret:
