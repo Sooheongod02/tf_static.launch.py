@@ -1,57 +1,29 @@
-#!/usr/bin/env python3
-import rospy
-import cv2
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge
+<launch>
+  <node pkg="gscam" type="gscam" name="cam_0" output="screen">
+    <param name="camera_name" value="cam_0"/>
+    <param name="frame_id" value="cam_0_link"/>
+    <param name="gscam_config" value="v4l2src device=/dev/video0 ! image/jpeg,width=640,height=480,framerate=15/1 ! jpegdec ! videoconvert ! video/x-raw,format=RGB ! appsink name=ros_appsink"/>
+    <remap from="camera/image_raw" to="/cam_0/image_raw"/>
+  </node>
 
-def main():
-    rospy.init_node('gmsl_camera_node', anonymous=True)
-    
-    device_id = rospy.get_param('~device_id', 0)
-    topic_name = rospy.get_param('~camera_name', 'camera')
+  <node pkg="gscam" type="gscam" name="cam_1" output="screen">
+    <param name="camera_name" value="cam_1"/>
+    <param name="frame_id" value="cam_1_link"/>
+    <param name="gscam_config" value="v4l2src device=/dev/video1 ! image/jpeg,width=640,height=480,framerate=15/1 ! jpegdec ! videoconvert ! video/x-raw,format=RGB ! appsink name=ros_appsink"/>
+    <remap from="camera/image_raw" to="/cam_1/image_raw"/>
+  </node>
 
-    pub = rospy.Publisher(f'/{topic_name}/image_raw', Image, queue_size=10)
-    bridge = CvBridge()
+  <node pkg="gscam" type="gscam" name="cam_2" output="screen">
+    <param name="camera_name" value="cam_2"/>
+    <param name="frame_id" value="cam_2_link"/>
+    <param name="gscam_config" value="v4l2src device=/dev/video2 ! image/jpeg,width=640,height=480,framerate=15/1 ! jpegdec ! videoconvert ! video/x-raw,format=RGB ! appsink name=ros_appsink"/>
+    <remap from="camera/image_raw" to="/cam_2/image_raw"/>
+  </node>
 
-    rospy.loginfo(f"[{topic_name}] GMSL Camera /dev/video{device_id} Starting...")
-
-    # [핵심] 임베디드 보드용 고속 파이프라인 (NVIDIA Jetson 최적화)
-    # 1. v4l2src: 카메라 데이터 수신 (UYVY 포맷 가정)
-    # 2. nvvidconv: GPU를 써서 색상 변환 (CPU 부하 감소)
-    # 3. video/x-raw(memory:NVMM): 메모리 제로카피 사용
-    # 주의: width, height는 카메라 스펙과 정확히 일치해야 합니다! (보통 1920x1080 또는 1280x720)
-    gst_str = (
-        f"v4l2src device=/dev/video{device_id} ! "
-        "video/x-raw,format=UYVY,width=1920,height=1080,framerate=30/1 ! " 
-        "nvvidconv ! video/x-raw(memory:NVMM) ! "
-        "nvvidconv ! video/x-raw,format=BGRx ! "
-        "videoconvert ! video/x-raw,format=BGR ! "
-        "appsink drop=1"
-    )
-
-    # 만약 위 파이프라인이 안 되면 아래 '비상용(CPU버전)' 주석을 풀고 위를 주석 처리하세요.
-    # gst_str = f"v4l2src device=/dev/video{device_id} ! video/x-raw,format=UYVY ! videoconvert ! video/x-raw,format=BGR ! appsink drop=1"
-
-    cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
-
-    if not cap.isOpened():
-        rospy.logerr(f"[{topic_name}] 열기 실패! 해상도(width/height)가 맞는지 확인하세요.")
-        return
-
-    rate = rospy.Rate(30)
-    while not rospy.is_shutdown():
-        ret, frame = cap.read()
-        if ret:
-            msg = bridge.cv2_to_imgmsg(frame, "bgr8")
-            msg.header.stamp = rospy.Time.now()
-            msg.header.frame_id = f"{topic_name}_link"
-            pub.publish(msg)
-        rate.sleep()
-
-    cap.release()
-
-if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+  <node pkg="gscam" type="gscam" name="cam_3" output="screen">
+    <param name="camera_name" value="cam_3"/>
+    <param name="frame_id" value="cam_3_link"/>
+    <param name="gscam_config" value="v4l2src device=/dev/video3 ! image/jpeg,width=640,height=480,framerate=15/1 ! jpegdec ! videoconvert ! video/x-raw,format=RGB ! appsink name=ros_appsink"/>
+    <remap from="camera/image_raw" to="/cam_3/image_raw"/>
+  </node>
+</launch>
