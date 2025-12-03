@@ -1,0 +1,21 @@
+<launch>
+    <node pkg="my_camera_driver" type="camera_pub.py" name="cam_1" output="screen">
+        <param name="device_id" value="0"/>
+        <param name="camera_name" value="cam_0"/>
+    </node>
+
+    <node pkg="my_camera_driver" type="camera_pub.py" name="cam_2" output="screen">
+        <param name="device_id" value="1"/>
+        <param name="camera_name" value="cam_1"/>
+    </node>
+
+    <node pkg="my_camera_driver" type="camera_pub.py" name="cam_3" output="screen">
+        <param name="device_id" value="2"/>
+        <param name="camera_name" value="cam_2"/>
+    </node>
+
+    <node pkg="my_camera_driver" type="camera_pub.py" name="cam_4" output="screen">
+        <param name="device_id" value="3"/>
+        <param name="camera_name" value="cam_3"/>
+    </node>
+</launch>
