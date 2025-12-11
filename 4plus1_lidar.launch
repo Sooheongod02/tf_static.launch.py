@@ -6,13 +6,13 @@
     </node>
 
     <node pkg="tf2_ros" type="static_transform_publisher" name="tf_ot_left" 
-          args="10.0 1.2 3.4 0 0 0 base_link ot128_left_frame" />
+          args="7.8 1.2 3.3 0 0 0 base_link ot128_left_frame" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="tf_ot_right" 
-          args="10.0 -1.2 3.4 0 0 0 base_link ot128_right_frame" />
+          args="7.8 -1.2 3.3 0 0 0 base_link ot128_right_frame" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="tf_qt_left" 
-          args="10.0 1.2 1.4 0 0 0 base_link qt128_left_frame" />
+          args="7.8 1.2 1.4 0 0 0 base_link qt128_left_frame" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="tf_qt_right" 
-          args="10.0 -1.2 1.4 0 0 0 base_link qt128_right_frame" />
+          args="7.8 -1.2 1.4 0 0 0 base_link qt128_right_frame" />
 
 
     <include file="$(find velodyne_pointcloud)/launch/VLP-32C_points.launch">
@@ -20,7 +20,7 @@
     </include>
 
     <node pkg="tf2_ros" type="static_transform_publisher" name="tf_velodyne" 
-          args="-2.5 0 3.4 0 0 0 base_link velodyne" />
+          args="-3.2 0 1.6 0 0 0 base_link velodyne" />
 
 
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_config)" />
